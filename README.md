@@ -9,6 +9,7 @@ Desarrollo del CTF Rickdiculously
 
 ## 2. Escaneo de Puertos
 
+```
 Nmap 7.91 scan initiated Tue Apr 27 00:13:09 2021 as: nmap -n -P0 -p- -sC -sV -O -T5 -oA full 192.168.56.106
 Nmap scan report for 192.168.56.106
 Host is up (0.00036s latency).
@@ -57,3 +58,6 @@ PORT      STATE SERVICE VERSION
 | fingerprint-strings: 
 |   NULL, ibm-db2: 
 |_    Welcome to Ricks half baked reverse shell...
+```
+
+<img src="https://github.com/El-Palomo/Rickdiculously/blob/main/rick1.jpg" width=80% />
