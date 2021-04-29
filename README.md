@@ -61,3 +61,218 @@ PORT      STATE SERVICE VERSION
 ```
 
 <img src="https://github.com/El-Palomo/Rickdiculously/blob/main/rick1.jpg" width=80% />
+
+## 3. Enumeración 
+
+## 3.1. Acceso directo a servicios
+
+- Existen puertos sobre los cuales podemos probar accesos por NETCAT
+
+```
+┌──(root💀kali)-[~/RICKDICULOUS]
+└─# nc 192.168.56.106 60000
+Welcome to Ricks half baked reverse shell...
+# whoami
+root 
+# ls
+FLAG.txt 
+# cat FLAG.txt
+FLAG{Flip the pickle Morty!} - 10 Points 
+                                                                                                                                          
+┌──(root💀kali)-[~/RICKDICULOUS]
+└─# nc 192.168.56.106 13337                                                                                                           1 ⨯
+FLAG:{TheyFoundMyBackDoorMorty}-10Points
+```
+<img src="https://github.com/El-Palomo/Rickdiculously/blob/main/rick2.jpg" width=80% />
+
+## 3.2. Enumeración HTTP
+
+```
+┌──(root💀kali)-[~/tools/dirsearch]
+└─# python3 dirsearch.py -u http://192.168.56.106/ -t 16 -r -e txt,html,php,asp,aspx,jsp -f -w /usr/share/wordlists/dirbuster/directory-list-1.0.txt 
+/root/tools/dirsearch/thirdparty/requests/__init__.py:91: RequestsDependencyWarning: urllib3 (1.26.2) or chardet (4.0.0) doesn't match a supported version!
+  warnings.warn("urllib3 ({}) or chardet ({}) doesn't match a supported "
+
+  _|. _ _  _  _  _ _|_    v0.4.1
+ (_||| _) (/_(_|| (_| )
+
+Extensions: txt, html, php, asp, aspx, jsp | HTTP method: GET | Threads: 16 | Wordlist size: 1133344
+
+Error Log: /root/tools/dirsearch/logs/errors-21-04-28_22-45-16.log
+
+Target: http://192.168.56.106/
+
+Output File: /root/tools/dirsearch/reports/192.168.56.106/_21-04-28_22-45-16.txt
+
+[22:45:16] Starting: 
+[22:45:16] 403 -  217B  - /cgi-bin/     (Added to queue)
+[22:45:29] 200 -  326B  - /index.html
+[22:45:53] 200 -   72KB - /icons/     (Added to queue)
+[22:46:09] 200 -  126B  - /robots.txt
+[22:47:03] 200 -    1KB - /passwords/     (Added to queue)
+[22:47:03] 301 -  240B  - /passwords  ->  http://192.168.56.106/passwords/
+```
+
+<img src="https://github.com/El-Palomo/Rickdiculously/blob/main/rick3.jpg" width=80% />
+
+- Identificamos el archivo robots.txt y archivos CGI.
+
+<img src="https://github.com/El-Palomo/Rickdiculously/blob/main/rick4.jpg" width=80% />
+
+<img src="https://github.com/El-Palomo/Rickdiculously/blob/main/rick5.jpg" width=80% />
+
+- El archivo tracertool.cgi tiene una inyección de comandos y podemos concatenar comandos con el punto y coma (;). Además, el comando CAT no funciona, por eso utilizamos el comando TAIL.
+
+<img src="https://github.com/El-Palomo/Rickdiculously/blob/main/rick6.jpg" width=80% />
+
+- Enumeramos los usuarios del sistema operativo.
+
+```
+root:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+adm:x:3:4:adm:/var/adm:/sbin/nologin
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+sync:x:5:0:sync:/sbin:/bin/sync
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+halt:x:7:0:halt:/sbin:/sbin/halt
+mail:x:8:12:mail:/var/spool/mail:/sbin/nologin
+operator:x:11:0:operator:/root:/sbin/nologin
+games:x:12:100:games:/usr/games:/sbin/nologin
+ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin
+nobody:x:99:99:Nobody:/:/sbin/nologin
+systemd-coredump:x:999:998:systemd Core Dumper:/:/sbin/nologin
+systemd-timesync:x:998:997:systemd Time Synchronization:/:/sbin/nologin
+systemd-network:x:192:192:systemd Network Management:/:/sbin/nologin
+systemd-resolve:x:193:193:systemd Resolver:/:/sbin/nologin
+dbus:x:81:81:System message bus:/:/sbin/nologin
+polkitd:x:997:996:User for polkitd:/:/sbin/nologin
+sshd:x:74:74:Privilege-separated SSH:/var/empty/sshd:/sbin/nologin
+rpc:x:32:32:Rpcbind Daemon:/var/lib/rpcbind:/sbin/nologin
+abrt:x:173:173::/etc/abrt:/sbin/nologin
+cockpit-ws:x:996:994:User for cockpit-ws:/:/sbin/nologin
+rpcuser:x:29:29:RPC Service User:/var/lib/nfs:/sbin/nologin
+chrony:x:995:993::/var/lib/chrony:/sbin/nologin
+tcpdump:x:72:72::/:/sbin/nologin
+RickSanchez:x:1000:1000::/home/RickSanchez:/bin/bash
+Morty:x:1001:1001::/home/Morty:/bin/bash
+Summer:x:1002:1002::/home/Summer:/bin/bash
+apache:x:48:48:Apache:/usr/share/httpd:/sbin/nologin
+```
+
+- En la carpeta /passwords encontramos un flag y una contraseña: winter.
+
+<img src="https://github.com/El-Palomo/Rickdiculously/blob/main/rick7.jpg" width=80% />
+
+<img src="https://github.com/El-Palomo/Rickdiculously/blob/main/rick8.jpg" width=80% />
+
+
+## 4. Acceso al Sistema
+
+### 4.1. Acceso por SSH
+
+- Probamos la contraseña obtenida en los usuarios del sistema enumerados. Con el usuario Summer:winter, podemos ingresar.
+
+```                                                                                                                                           
+┌──(root💀kali)-[/home/kali]
+└─# ssh -p 22222 Summer@192.168.56.106
+Summer@192.168.56.106's password: 
+Last login: Thu Apr 29 00:59:36 2021 from 192.168.56.104
+[Summer@localhost ~]$ whoami
+Summer
+[Summer@localhost ~]$ pwd
+/home/Summer
+[Summer@localhost ~]$ 
+```
+
+<img src="https://github.com/El-Palomo/Rickdiculously/blob/main/rick9.jpg" width=80% />
+
+### 4.2. Enumeración de información en la carpeta /home
+
+```
+[Summer@localhost home]$ ls -laR /home
+/home:
+total 0
+drwxr-xr-x.  5 root        root         52 Aug 18  2017 .
+dr-xr-xr-x. 17 root        root        236 Aug 18  2017 ..
+drwxr-xr-x.  2 Morty       Morty       131 Sep 15  2017 Morty
+drwxr-xr-x.  4 RickSanchez RickSanchez 113 Sep 21  2017 RickSanchez
+drwx------.  2 Summer      Summer      111 Apr 29 02:10 Summer
+
+/home/Morty:
+total 64
+drwxr-xr-x. 2 Morty Morty   131 Sep 15  2017 .
+drwxr-xr-x. 5 root  root     52 Aug 18  2017 ..
+-rw-------. 1 Morty Morty     1 Sep 15  2017 .bash_history
+-rw-r--r--. 1 Morty Morty    18 May 30  2017 .bash_logout
+-rw-r--r--. 1 Morty Morty   193 May 30  2017 .bash_profile
+-rw-r--r--. 1 Morty Morty   231 May 30  2017 .bashrc
+-rw-r--r--. 1 root  root    414 Aug 22  2017 journal.txt.zip
+-rw-r--r--. 1 root  root  43145 Aug 22  2017 Safe_Password.jpg
+
+/home/RickSanchez:
+total 12
+drwxr-xr-x. 4 RickSanchez RickSanchez 113 Sep 21  2017 .
+drwxr-xr-x. 5 root        root         52 Aug 18  2017 ..
+-rw-r--r--. 1 RickSanchez RickSanchez  18 May 30  2017 .bash_logout
+-rw-r--r--. 1 RickSanchez RickSanchez 193 May 30  2017 .bash_profile
+-rw-r--r--. 1 RickSanchez RickSanchez 231 May 30  2017 .bashrc
+drwxr-xr-x. 2 RickSanchez RickSanchez  18 Sep 21  2017 RICKS_SAFE
+drwxrwxr-x. 2 RickSanchez RickSanchez  26 Aug 18  2017 ThisDoesntContainAnyFlags
+
+/home/RickSanchez/RICKS_SAFE:
+total 12
+drwxr-xr-x. 2 RickSanchez RickSanchez   18 Sep 21  2017 .
+drwxr-xr-x. 4 RickSanchez RickSanchez  113 Sep 21  2017 ..
+-rwxr--r--. 1 RickSanchez RickSanchez 8704 Sep 21  2017 safe
+
+/home/RickSanchez/ThisDoesntContainAnyFlags:
+total 4
+drwxrwxr-x. 2 RickSanchez RickSanchez  26 Aug 18  2017 .
+drwxr-xr-x. 4 RickSanchez RickSanchez 113 Sep 21  2017 ..
+-rw-rw-r--. 1 RickSanchez RickSanchez  95 Aug 18  2017 NotAFlag.txt
+
+/home/Summer:
+total 32
+drwx------. 2 Summer Summer  111 Apr 29 02:10 .
+drwxr-xr-x. 5 root   root     52 Aug 18  2017 ..
+-rw-------. 1 Summer Summer 1765 Apr 29 03:21 .bash_history
+-rw-r--r--. 1 Summer Summer   18 May 30  2017 .bash_logout
+-rw-r--r--. 1 Summer Summer  193 May 30  2017 .bash_profile
+-rw-r--r--. 1 Summer Summer  231 May 30  2017 .bashrc
+-rw-rw-r--. 1 Summer Summer   48 Aug 22  2017 FLAG.txt
+-rwxr--r--. 1 Summer Summer 8704 Apr 29 02:10 safe
+```
+
+<img src="https://github.com/El-Palomo/Rickdiculously/blob/main/rick10.jpg" width=80% />
+
+
+- Me llama la atención los archivos: journal.txt.zip y Safe_Password.jpg. Los descargamos y analizamos.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
