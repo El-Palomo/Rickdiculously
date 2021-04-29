@@ -246,30 +246,78 @@ drwxr-xr-x. 5 root   root     52 Aug 18  2017 ..
 
 <img src="https://github.com/El-Palomo/Rickdiculously/blob/main/rick10.jpg" width=80% />
 
-
 - Me llama la atención los archivos: journal.txt.zip y Safe_Password.jpg. Los descargamos y analizamos.
 
+```
+┌──(root💀kali)-[~/RICKDICULOUS]
+└─# wget http://192.168.56.106:8080/journal.txt.zip
+--2021-04-28 23:10:41--  http://192.168.56.106:8080/journal.txt.zip
+Connecting to 192.168.56.106:8080... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 414 [application/zip]
+Saving to: ‘journal.txt.zip’
 
+journal.txt.zip                    100%[==============================================================>]     414  --.-KB/s    in 0s      
 
+2021-04-28 23:10:41 (56.2 MB/s) - ‘journal.txt.zip’ saved [414/414]
 
+                                                                                                                                          
+┌──(root💀kali)-[~/RICKDICULOUS]
+└─# wget http://192.168.56.106:8080/Safe_Password.jpg
+--2021-04-28 23:10:51--  http://192.168.56.106:8080/Safe_Password.jpg
+Connecting to 192.168.56.106:8080... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 43145 (42K) [image/jpeg]
+Saving to: ‘Safe_Password.jpg’
 
+Safe_Password.jpg                  100%[==============================================================>]  42.13K  --.-KB/s    in 0s 
+```
 
+<img src="https://github.com/El-Palomo/Rickdiculously/blob/main/rick11.jpg" width=80% />
 
+- La imagen contiene un mensaje escondido. Vamos analizarlo.
 
+```
+┌──(root💀kali)-[~/RICKDICULOUS]
+└─# strings Safe_Password.jpg| more
+JFIF
+Exif
+8 The Safe Password: File: /home/Morty/journal.txt.zip. Password: Meeseek
+8BIM
+8BIM
+$3br
+%&'()*456789:CDEFGHIJSTUVWXYZcdefghijstuvwxyz
+	#3R
+&'()*56789:CDEFGHIJSTUVWXYZcdefghijstuvwxyz
+```
 
+<img src="https://github.com/El-Palomo/Rickdiculously/blob/main/rick12.jpg" width=80% />
 
+- Descomprimimos el archivo y colocamos la contraseña obtenida: Meeseek
 
+```
+┌──(root💀kali)-[~/RICKDICULOUS]
+└─# unzip journal.txt.zip   
+Archive:  journal.txt.zip
+[journal.txt.zip] journal.txt password: 
+  inflating: journal.txt             
+                                                                                                                                          
+┌──(root💀kali)-[~/RICKDICULOUS]
+└─# ls
+autorecon  FLAG.txt  full.gnmap  full.nmap  full.xml  journal.txt  journal.txt.zip  live.txt  safe  Safe_Password.jpg  users.txt
+                                                                                                                                          
+┌──(root💀kali)-[~/RICKDICULOUS]
+└─# cat journal.txt
+Monday: So today Rick told me huge secret. He had finished his flask and was on to commercial grade paint solvent. He spluttered something about a safe, and a password. Or maybe it was a safe password... Was a password that was safe? Or a password to a safe? Or a safe password to a safe?
 
+Anyway. Here it is:
 
+FLAG: {131333} - 20 Points 
+```
 
+<img src="https://github.com/El-Palomo/Rickdiculously/blob/main/rick13.jpg" width=80% />
 
-
-
-
-
-
-
-
+- 
 
 
 
